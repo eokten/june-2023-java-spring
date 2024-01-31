@@ -1,11 +1,14 @@
 package com.okten.springdemo.controller;
 
-import com.okten.springdemo.dao.ProductDao;
-import com.okten.springdemo.entity.Product;
-import com.okten.springdemo.repository.ProductRepository;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.okten.springdemo.dto.ProductDto;
+import com.okten.springdemo.service.ProductService;
+import com.okten.springdemo.util.View;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,23 +20,27 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductController {
 
-//    private final ProductRepository productDao;
-    private final ProductRepository productRepository;
+    private final ProductService productService;
 
+    @JsonView(View.Internal.class)
+    @GetMapping("/internal/products")
+    public ResponseEntity<List<ProductDto>> getProductsInternal(@RequestParam(required = false) String name) {
+        return ResponseEntity.ok(productService.getProducts(name));
+    }
+
+    @JsonView(View.External.class)
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getProducts(@RequestParam String name) {
-        if (name != null) {
-            return ResponseEntity.ok(productRepository.findByNameLike(name));
-        } else {
-//        return ResponseEntity.ok(productDao.getProducts());
-            return ResponseEntity.ok(productRepository.findAll());
-        }
+    public ResponseEntity<List<ProductDto>> getProducts(@RequestParam(required = false) String name) {
+        return ResponseEntity.ok(productService.getProducts(name));
+    }
+
+    @GetMapping("/products/{id}")
+    public ResponseEntity<ProductDto> getProducts(@PathVariable Long id) {
+        return ResponseEntity.of(productService.getProductById(id));
     }
 
     @PostMapping("/products")
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-//        Product createdProduct = productDao.saveProduct(product);
-        Product createdProduct = productRepository.save(product);
-        return ResponseEntity.ok().body(createdProduct);
+    public ResponseEntity<ProductDto> createProduct(@RequestBody @Valid ProductDto productDto) {
+        return ResponseEntity.ok().body(productService.createProduct(productDto));
     }
 }
