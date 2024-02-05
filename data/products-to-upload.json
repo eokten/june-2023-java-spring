@@ -1,0 +1,17 @@
+[
+  {
+    "name": "12 product from file",
+    "price": 100.0,
+    "quantity": 10
+  },
+  {
+    "name": "22 product from file",
+    "price": 222.0,
+    "quantity": 22
+  },
+  {
+    "name": "32 product from file",
+    "price": 4242.42,
+    "quantity": 1313
+  }
+]

@@ -3,6 +3,7 @@ package com.okten.springdemo.controller;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.okten.springdemo.dto.ProductDto;
 import com.okten.springdemo.service.ProductService;
+import com.okten.springdemo.service.ProductUploadService;
 import com.okten.springdemo.util.View;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,6 +23,8 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+
+    private final ProductUploadService productUploadService;
 
     @JsonView(View.Internal.class)
     @GetMapping("/internal/products")
@@ -42,5 +46,10 @@ public class ProductController {
     @PostMapping("/products")
     public ResponseEntity<ProductDto> createProduct(@RequestBody @Valid ProductDto productDto) {
         return ResponseEntity.ok().body(productService.createProduct(productDto));
+    }
+
+    @PostMapping("/products/upload")
+    public ResponseEntity<List<ProductDto>> uploadProducts(@RequestParam("file") MultipartFile file) {
+        return ResponseEntity.ok(productUploadService.uploadProducts(file));
     }
 }
