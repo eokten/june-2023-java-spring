@@ -7,3 +7,22 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${mail.username}
+    password: ${mail.password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+mail:
+  sendFrom: ${mail.username}
+  sendTo: ${mail.username}
