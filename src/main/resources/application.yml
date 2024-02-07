@@ -18,3 +18,7 @@ spring:
           auth: true
           starttls:
             enable: true
+  data:
+    mongodb:
+      uri: ${mongodb.uri}
+      database: "reviewsData"
