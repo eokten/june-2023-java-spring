@@ -2,7 +2,6 @@ package com.okten.carservice.service;
 
 import com.okten.carservice.entity.Car;
 import com.okten.carservice.repository.CarRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
@@ -26,7 +25,7 @@ public class CarService {
         return carRepository.findAll();
     }
 
-    public Optional<Car> findById(Long id) {
+    public Optional<Car> findById(String id) {
         return carRepository.findById(id);
     }
 
@@ -42,12 +41,10 @@ public class CarService {
         return carRepository.findAll(Example.of(example));
     }
 
-    @Transactional
-    public void updateCarImage(Long carId, byte[] imageBytes) {
+    public void updateCarImage(String carId, byte[] imageBytes) {
         carRepository
                 .findById(carId)
                 .ifPresent(car -> {
-                    car.setImage(imageBytes);
                     mailService.sendMail(
                             sendTo,
                             "Car image was updated",
@@ -66,17 +63,15 @@ public class CarService {
     }
 
     public Car createCar(Car source, byte[] imageBytes) {
-        source.setImage(imageBytes);
         Car savedCar = carRepository.save(source);
         mailService.sendMail(
                 sendTo,
                 "New car created",
-                "Car %s was created".formatted(savedCar.getModel()),
-                imageBytes);
+                "Car %s was created".formatted(savedCar.getModel()));
         return savedCar;
     }
 
-    public void deleteCar(Long carId) {
+    public void deleteCar(String carId) {
         carRepository
                 .findById(carId)
                 .ifPresent(car -> {
@@ -84,8 +79,7 @@ public class CarService {
                     mailService.sendMail(
                             sendTo,
                             "Car was deleted",
-                            "Car %s was just deleted".formatted(car.getModel()),
-                            car.getImage());
+                            "Car %s was just deleted".formatted(car.getModel()));
                 });
     }
 }

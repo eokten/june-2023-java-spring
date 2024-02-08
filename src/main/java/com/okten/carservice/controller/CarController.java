@@ -33,7 +33,7 @@ public class CarController {
     }
 
     @GetMapping("/cars/{id}")
-    public ResponseEntity<Car> getCar(@PathVariable("id") Long id) {
+    public ResponseEntity<Car> getCar(@PathVariable("id") String id) {
         return ResponseEntity.of(carService.findById(id));
     }
 
@@ -48,7 +48,7 @@ public class CarController {
 
     @SneakyThrows
     @PutMapping("/cars/{id}/image")
-    public ResponseEntity<Void> updateCarImage(@PathVariable("id") Long carId, @RequestParam("file") MultipartFile attachment) {
+    public ResponseEntity<Void> updateCarImage(@PathVariable("id") String carId, @RequestParam("file") MultipartFile attachment) {
         carService.updateCarImage(carId, attachment.getBytes());
         return ResponseEntity.accepted().build();
     }
@@ -83,7 +83,7 @@ public class CarController {
     }
 
     @DeleteMapping("/cars/{id}")
-    public ResponseEntity<Void> deleteCar(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteCar(@PathVariable("id") String id) {
         carService.deleteCar(id);
         return ResponseEntity.accepted().build();
     }

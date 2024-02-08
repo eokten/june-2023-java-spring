@@ -1,30 +1,19 @@
 package com.okten.carservice.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.Table;
 import lombok.Data;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.MongoId;
 
 @Data
-@Entity
-@Table(name = "cars")
+@Document("cars")
 public class Car {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @MongoId
+    private String id;
 
     private String model;
 
     private String producer;
 
     private Double power;
-
-    @Lob
-    @Column(name = "image_bytes")
-    private byte[] image;
 }
