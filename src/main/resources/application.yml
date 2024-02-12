@@ -20,5 +20,8 @@ spring:
             enable: true
   data:
     mongodb:
-      uri: ${mongodb.uri}
+      uri: mongodb+srv://root:root@cluster0.m7dnzbv.mongodb.net/?retryWrites=true&w=majority
       database: "reviewsData"
+
+jwt:
+  signingKey: super-long-secret-password-123456

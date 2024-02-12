@@ -8,6 +8,7 @@ import com.okten.springdemo.util.View;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,6 +44,7 @@ public class ProductController {
         return ResponseEntity.of(productService.getProductById(id));
     }
 
+    @Secured("ROLE_SELLER")
     @PostMapping("/products")
     public ResponseEntity<ProductDto> createProduct(@RequestBody @Valid ProductDto productDto) {
         return ResponseEntity.ok().body(productService.createProduct(productDto));
