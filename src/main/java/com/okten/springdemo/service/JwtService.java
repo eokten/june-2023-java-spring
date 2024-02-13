@@ -9,18 +9,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 @Service
 public class JwtService {
-
-    private static long TOKEN_TTL_MILLIS = 600 * 60 * 1000;
 
     @Value("${jwt.signingKey}")
     private String signingKey;
@@ -32,7 +32,7 @@ public class JwtService {
         key = Keys.hmacShaKeyFor(signingKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateAccessToken(UserDetails userDetails, long expirationSeconds) {
         List<String> roles = userDetails
                 .getAuthorities()
                 .stream()
@@ -44,7 +44,18 @@ public class JwtService {
                 .addClaims(Map.of("roles", roles))
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + TOKEN_TTL_MILLIS))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationSeconds * 1000))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateRefreshToken(UserDetails userDetails, long expirationSeconds) {
+        return Jwts
+                .builder()
+                .addClaims(Map.of("type", "refresh"))
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expirationSeconds * 1000))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -53,8 +64,16 @@ public class JwtService {
         return resolveClaim(token, Claims::getExpiration).before(new Date());
     }
 
+    public boolean isRefreshToken(String token) {
+        return resolveClaim(token, claims -> Objects.equals(claims.get("type", String.class), "refresh"));
+    }
+
     public String extractUsername(String token) {
         return resolveClaim(token, Claims::getSubject);
+    }
+
+    public Date extractExpiration(String token) {
+        return resolveClaim(token, Claims::getExpiration);
     }
 
     private <T> T resolveClaim(String token, Function<Claims, T> resolver) {

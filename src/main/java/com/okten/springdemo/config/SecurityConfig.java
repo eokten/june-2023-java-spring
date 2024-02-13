@@ -1,6 +1,8 @@
 package com.okten.springdemo.config;
 
+import com.okten.springdemo.handler.AuthErrorHandler;
 import com.okten.springdemo.security.JwtAuthFilter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +14,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,7 +28,10 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true)
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final AuthErrorHandler authErrorHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -67,12 +73,14 @@ public class SecurityConfig {
                                                    JwtAuthFilter jwtAuthFilter) {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(CorsConfigurer::disable)
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/api/auth/**", "/error").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(configurer -> configurer.authenticationEntryPoint(authErrorHandler))
                 .build();
     }
 
