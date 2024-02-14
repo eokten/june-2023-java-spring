@@ -17,7 +17,7 @@ public class SendPromosToActiveUsers {
     private final WebSocketSessionRepository webSocketSessionRepository;
     private final Iterator<String> promos = Iterators.cycle("Спеціальні пропозиції до кінця тижня", "Знижки на колекцію минулого року", "-10% з картою БанкБанк");
 
-    @Scheduled(cron = "0/5 * * * * *")
+    @Scheduled(cron = "0 0/5 * * * *")
     public void sendPromos() {
         log.info("Відправляємо спеціальні пропозиції...");
         webSocketSessionRepository.sendToAll(promos.next());

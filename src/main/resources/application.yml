@@ -22,6 +22,9 @@ spring:
     mongodb:
       uri: mongodb+srv://root:root@cluster0.m7dnzbv.mongodb.net/?retryWrites=true&w=majority
       database: "reviewsData"
-
-jwt:
-  signingKey: super-long-secret-password-123456
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://accounts.google.com
+          jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
