@@ -22,9 +22,8 @@ spring:
     mongodb:
       uri: mongodb+srv://root:root@cluster0.m7dnzbv.mongodb.net/?retryWrites=true&w=majority
       database: "reviewsData"
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: https://accounts.google.com
-          jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
+
+auth:
+  issuers:
+    google: https://accounts.google.com
+    microsoft: https://login.microsoftonline.com/9188040d-6c67-4c5b-b112-36a304b66dad/v2.0
